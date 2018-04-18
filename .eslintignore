@@ -1,0 +1,9 @@
+build/*.js
+config/*.js
+src/common/js/UE/*
+src/components/UEditor/*
+src/components/serviceManagement/serviceAudit.vue
+src/components/mail/bulkMail.vue
+src/components/mail/massMailing.vue
+src/components/compinfo/payNumber.vue
+src/components/leftlist/menuBuild.js
