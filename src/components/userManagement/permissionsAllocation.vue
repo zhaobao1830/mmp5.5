@@ -87,7 +87,8 @@
         paudShow: false, // 修改密码弹出框是否显示
         paudUsername: '', // 传递给修改密码弹出框的用户名
         patShow: false, // 分配权限弹出框是否显示
-        perAll_list: [] // 分配权限列表(里面包含了选择的用户信息，id和username)
+        perAll_list: [], // 分配权限列表(里面包含了选择的用户信息，id和username)
+        id_username_obj: {}  // 请求到body_list后，获取到里面的id和对应的username,保存到这个list里面
       }
     },
     mounted () {
@@ -174,7 +175,6 @@
           .then(function (response) {
             _this.thIsClick = false
             _this.trClick_list.length = 0
-            console.log(response.data)
             _this.tbody_list = response.data.list
           })
           .catch(function (err) {
@@ -184,14 +184,20 @@
       // 批量权限分配
       batchPermissionsAllocation (sta, id, username) {
         this.perAll_list.length = 0
-        let user = {
-          id: id,
-          username: username
-        }
         if (sta === 0) {
-          this.perAll_list.push(user)
+          this.perAll_list.push({id: id, username: username})
+          this.patShow = true
+        } else {
+          if (this.trClick_list.length > 0) {
+            this.getIdUsername(this.tbody_list)
+            for (let i = 0; i < this.trClick_list.length; i++) {
+              this.perAll_list.push({id: this.trClick_list[i], username: this.id_username_obj[this.trClick_list[i]]})
+            }
+            this.patShow = true
+          } else {
+            this.$message('请至少选择一个用户！')
+          }
         }
-        this.patShow = true
       },
       changeThClik () {
         this.thIsClick = !this.thIsClick
@@ -228,7 +234,7 @@
       },
       // 改变状态
       changeState (id, oldStatus, newStatus) {
-        if (oldStatus !== newStatus) {
+        if (Number(oldStatus.trim()) !== Number(newStatus)) {
           let data = {
             id: id,
             status: newStatus
@@ -264,6 +270,14 @@
       closePat (data) {
         if (data) {
           this.patShow = false
+        }
+      },
+      // 通过获取到的body_list，获取到id和对应的username
+      getIdUsername (list) {
+        if (list.length > 0) {
+          for (let i = 0; i < list.length; i++) {
+            this.id_username_obj[list[i].id] = list[i].username
+          }
         }
       }
     },

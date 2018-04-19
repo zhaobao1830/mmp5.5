@@ -14,6 +14,7 @@
           <span>请上传Excel文件</span>
           <br/>
           <input type="file" @change="getExcel($event)" name="email_file[]" accept=".csv, application/vnd.ms-excel, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet">
+          <a class="templateDownload" href="http://mmp.crecgwm.com/index.php?s=Email/Index/download" target="_blank">模板下载</a>
         </div>
         <div>
           <p>标题：</p>
@@ -308,5 +309,19 @@
   }
   .blmA:hover{
     background-color: #4986c6;
+  }
+  .templateDownload{
+    width: 90px;
+    display: inline-block;
+    height: 34px;
+    line-height: 34px;
+    border-radius: 4px;
+    font-size: 16px;
+    text-align: center;
+    margin-left: 20px;
+    margin-top: 20px;
+    text-decoration: none;
+    background-color: #4ea0ea;
+    color: #ffffff;
   }
 </style>
