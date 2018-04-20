@@ -176,6 +176,7 @@
             _this.thIsClick = false
             _this.trClick_list.length = 0
             _this.tbody_list = response.data.list
+            _this.isButton = false
           })
           .catch(function (err) {
             console.log(err)
