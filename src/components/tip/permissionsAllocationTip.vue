@@ -96,7 +96,7 @@
           }
         })
           .then(function (response) {
-            _this.authority_list = response.data
+            _this.authority_list = response.data.data
           })
           .catch(function (err) {
             console.log(err)
