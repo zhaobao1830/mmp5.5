@@ -56,6 +56,7 @@
   import axios from 'axios'
   require('es6-promise').polyfill()
   import {deleteArray} from 'common/js/dom'
+  import {isIntNum} from 'common/js/util'
 
   export default {
     props: ['addOrUpdate', 'packageRegistr'],
@@ -71,7 +72,8 @@
         product: '', // 可订购终端
         allowplaystpe: '',
         payTypeList: ['支付宝', '微信', '线下支付'], // 支付方式
-        payTypeClickList: [] // 点击的支付方式
+        payTypeClickList: [], // 点击的支付方式
+        flag: true
       }
     },
     watch: {
@@ -121,6 +123,31 @@
       },
       addPackge () {
         if (this.servicetypename) {
+          this.flag = true
+        } else {
+          this.flag = false
+          this.$message('请输入套餐名称!')
+          return false
+        }
+        if (this.clientcout) {
+          if (isIntNum(this.clientcout)) {
+            this.flag = true
+          } else {
+            this.flag = false
+            this.$message('最大允许数量必须为正整数!')
+            return false
+          }
+        }
+        if (this.product) {
+          if (isIntNum(this.product)) {
+            this.flag = true
+          } else {
+            this.flag = false
+            this.$message('可订购终端必须为正整数!')
+            return false
+          }
+        }
+        if (this.flag) {
           let data = {
             'interface': 'addServicetype',
             'serviceid': this.serviceid,
@@ -165,8 +192,6 @@
               console.log(err)
             })
           this.$emit('isAddconShow', false)
-        } else {
-          this.$message('请输入套餐名称!')
         }
       },
       updatePackge () {
