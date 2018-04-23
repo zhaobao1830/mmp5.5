@@ -24,6 +24,10 @@
           <img src="http://static.crecgec.com/mmp/error_01.png"/>
           <p>登录密码不能为空</p>
         </div>
+        <div class="msg passwordMsg" v-show="passwordMsg1">
+          <img src="http://static.crecgec.com/mmp/error_01.png"/>
+          <p>登录密码不能少于6位</p>
+        </div>
       </div>
       <div class="regDiv">
         <p class="regName">确认密码：</p><input class="regVal" type="password" v-model="checkPwd" @blur="checkRePassword"/>
@@ -37,14 +41,14 @@
         </div>
       </div>
       <div class="regDiv">
-        <p class="regName">真实姓名：</p><input class="regVal" type="password" v-model="realname" @blur="checkPassword"/>
+        <p class="regName">真实姓名：</p><input class="regVal" type="text" v-model="realname" @blur="checkPassword"/>
         <div class="msg passwordMsg" v-show="realnameMsg">
           <img src="http://static.crecgec.com/mmp/error_01.png"/>
           <p>真实姓名不能为空</p>
         </div>
       </div>
       <div class="regDiv">
-        <p class="regName">所在部门：</p><input class="regVal" type="password" v-model="department" @blur="checkPassword"/>
+        <p class="regName">所在部门：</p><input class="regVal" type="text" v-model="department" @blur="checkPassword"/>
         <div class="msg passwordMsg" v-show="departmentMsg">
           <img src="http://static.crecgec.com/mmp/error_01.png"/>
           <p>所在部门不能为空</p>
@@ -70,6 +74,7 @@
         usernameMsg1: false,
         usernameMsg2: false,
         passwordMsg: false,
+        passwordMsg1: false,
         checkPasswordMsg1: false,
         checkPasswordMsg2: false,
         realnameMsg: false,
@@ -94,7 +99,9 @@
           let data = {
             username: this.username,
             password: this.password,
-            checkPwd: this.checkPwd
+            checkPwd: this.checkPwd,
+            realname: this.realnameMsg,
+            department: this.departmentMsg
           }
           axios({
             // url: this.$store.state.baseUrl + '/php/login.php',
@@ -115,7 +122,7 @@
             }
           })
             .then(function (response) {
-              alert(response.data.detail)
+              _this.$message(response.data.detail)
               _this.username = ''
               _this.password = ''
               _this.checkPwd = ''
@@ -174,6 +181,13 @@
         if (this.password.trim()) {
           this.flag = true
           this.passwordMsg = false
+          if (this.password.trim().length < 6) {
+            this.flag = false
+            this.passwordMsg1 = true
+          } else {
+            this.flag = true
+            this.passwordMsg1 = false
+          }
         } else {
           this.flag = false
           this.passwordMsg = true
@@ -290,7 +304,7 @@
     color: #fff;
   }
   .msg{
-    width: 140px;
+    width: 180px;
     float: left;
     margin-left: 20px;
     font-size: 14px;

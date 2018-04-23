@@ -68,6 +68,7 @@
     methods: {
       // 关闭弹出框
       closePat () {
+        this.authorityHas.length = 0
         this.$emit('closePat', true)
       },
       // 改变liClick_list列表
