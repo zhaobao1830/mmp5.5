@@ -48,13 +48,13 @@
         <div v-show="tbody_list.length === 0" class="noTbodyList">没有数据</div>
         <div class="table_button" v-show="isButton">
           <div class="tableButton">
-            <a href="javascript:;" class="goFirst" @click="allUserSearch('first')">首页</a>
-            <a href="javascript:;" class="prePage" @click="allUserSearch('pre')">上一页</a>
+            <a href="javascript:;" class="goFirst" @click="allUserSea ? allUserSearch('first') : usernameSearch('first')">首页</a>
+            <a href="javascript:;" class="prePage" @click="allUserSea ? allUserSearch('pre') : usernameSearch('pre')">上一页</a>
             <p class="currentPage">{{page}} / {{totalPages}}</p>
-            <a href="javascript:;" class="nextPage" @click="allUserSearch('next')">下一页</a>
-            <a href="javascript:;" class="goLast" @click="allUserSearch('end')">尾页</a>
+            <a href="javascript:;" class="nextPage" @click="allUserSea ? allUserSearch('next') : usernameSearch('next')">下一页</a>
+            <a href="javascript:;" class="goLast" @click="allUserSea ? allUserSearch('end') : usernameSearch('end')">尾页</a>
             <input type="text" value="" class="pages" v-model="goPageVal">
-            <a href="javascript:;" class="goPage" @click="allUserSearch('goPage')">跳转</a>
+            <a href="javascript:;" class="goPage" @click="allUserSea ? allUserSearch('goPage') : usernameSearch('goPage')">跳转</a>
           </div>
         </div>
       </div>
@@ -88,7 +88,8 @@
         paudUsername: '', // 传递给修改密码弹出框的用户名
         patShow: false, // 分配权限弹出框是否显示
         perAll_list: [], // 分配权限列表(里面包含了选择的用户信息，id和username)
-        id_username_obj: {}  // 请求到body_list后，获取到里面的id和对应的username,保存到这个list里面
+        id_username_obj: {},  // 请求到body_list后，获取到里面的id和对应的username,保存到这个list里面
+        allUserSea: true
       }
     },
     mounted () {
@@ -97,6 +98,7 @@
     methods: {
       // 查询所有用户
       allUserSearch (goPage) {
+        this.allUserSea = true
         let _this = this
         const SIZE = 10 // 每次请求的页数
         let newPage = 1 // 跳转到第几页
@@ -152,35 +154,62 @@
           })
       },
       // 通过用户名查询
-      usernameSearch () {
+      usernameSearch (goPage) {
+        this.allUserSea = false
         let _this = this
-        let data = {
-          'username': this.username
+        const SIZE = 10 // 每次请求的页数
+        let newPage = 1 // 跳转到第几页
+        if (goPage === 'first') {
+          newPage = 1
+        } else if (goPage === 'pre') {
+          newPage = this.page > 1 ? this.page - 1 : 1
+        } else if (goPage === 'next') {
+          newPage = this.page > this.totalPages ? this.page : this.page + 1
+        } else if (goPage === 'end') {
+          newPage = this.totalPages
+        } else if (goPage === 'goPage') {
+          newPage = this.goPageVal
         }
-        axios({
-          url: this.$store.state.baseUrl + this.$store.state.mmpUrl + 'index.php?s=User/Authority/getCurrentAuth',
-          method: 'POST',
-          data: data,
-          transformRequest: [function (data) {
-            let ret = ''
-            for (let it in data) {
-              ret += encodeURIComponent(it) + '=' + encodeURIComponent(data[it]) + '&'
-            }
-            return ret
-          }],
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded'
+        if (this.username) {
+          let data = {
+            'username': this.username,
+            'page': newPage,
+            'size': SIZE
           }
-        })
-          .then(function (response) {
-            _this.thIsClick = false
-            _this.trClick_list.length = 0
-            _this.tbody_list = response.data.list
-            _this.isButton = false
+          axios({
+            url: this.$store.state.baseUrl + this.$store.state.mmpUrl + 'index.php?s=User/Authority/SearchUserInfo',
+            method: 'POST',
+            data: data,
+            transformRequest: [function (data) {
+              let ret = ''
+              for (let it in data) {
+                ret += encodeURIComponent(it) + '=' + encodeURIComponent(data[it]) + '&'
+              }
+              return ret
+            }],
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded'
+            }
           })
-          .catch(function (err) {
-            console.log(err)
-          })
+            .then(function (response) {
+              _this.thIsClick = false
+              _this.trClick_list.length = 0
+              _this.tbody_list = response.data.list
+              _this.page = newPage
+              _this.isButton = false
+              if (Number(response.data.count) > 10) {
+                _this.isButton = true
+              } else {
+                _this.isButton = false
+              }
+              _this.totalPages = Math.ceil(Number(response.data.count) / Number(SIZE))
+            })
+            .catch(function (err) {
+              console.log(err)
+            })
+        } else {
+          this.allUserSearch()
+        }
       },
       // 批量权限分配
       batchPermissionsAllocation (sta, id, username) {
