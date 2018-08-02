@@ -63,16 +63,8 @@
                         </thead>
                         <tbody>
                           <tr v-for='(compInfoVal, compInfoKey) in searchList[key]'>
-                            <td>
-                                {{compInfoVal.quatypename || ''}}
-                            </td>
-                            <td>
-                                {{compInfoVal.fileid || ''}}
-                            </td>
-                            <td>
-                                <a href="javascript:;" @click='downfile(compInfoVal.fileid, compInfoVal.filename)'>
-                                {{compInfoVal.filename || ''}}
-                                </a>
+                            <td  v-for='(contVal, contKey) in compInfo1[key]'>
+                                {{compInfoVal[contKey] || ''}}
                             </td>
                           </tr>
                         </tbody>
@@ -100,6 +92,7 @@ export default {
       compInfo1,
       srcStr: '111',
       tabList: {
+        // name为tab名称，isTitle表示是否为上下展示
         compCount: {
           name: '企业账号信息',
           isTitle: false
@@ -133,7 +126,11 @@ export default {
   },
   methods: {
     seach () {
-      messageSub(this)
+      if (this.keyword) {
+        messageSub(this)
+      } else {
+        this.$message('请填写查询条件！')
+      }
     },
     changeTab (key) {
       this.tabChioce = key

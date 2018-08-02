@@ -6,7 +6,7 @@
             <p>当前位置：</p>
             <span>知识库</span>
             <i></i>
-            <span>知识库维护</span>
+            <span>知识库查询</span>
         </div>
         <div class="kdmCon kdmCon_search rightCont">
             <div class="kdmCon_left">
@@ -17,7 +17,7 @@
                             {{val.rulename}}
                         </p>
                      </div>
-                       <transition name="listhide">  
+                       <transition name="listhide">
                          <ul class="childList" v-show='val.select'>
                             <li v-for='(value, childKey) in val.child' :ruleidrCh='childKey' @click='getCont(childKey)' :class="{'kdmClick_li': knowledge_childSelect == childKey}">
                                 <span>{{value}}</span>

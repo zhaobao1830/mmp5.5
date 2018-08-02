@@ -40,8 +40,8 @@ export let compInfo = {
   'vmsorts': '主营类别',
   'appinfobills': '审核记录',
   'appinfochg': '信息变更记录'
-}
-
+}/*
+*/
 export let payInfo = {
   'vmsortcode': '主营类别编号',
   'vmsortname': '主营类别名称',
@@ -92,9 +92,41 @@ export let compInfo1 = {
     'appinfochg': '信息变更记录',
     'appdescnote': '备注信息'
   },
+  'quafiles': {
+    'quatypename': '资质类型',
+    'fileid': '文件ID',
+    'filename': '文件名称'
+  },
+  'vmsorts': {
+    'subtypename': '标的类型',
+    'vmsortname': '主营类别'
+  },
+  'srvorders': {
+    'appuser': '申请人',
+    'appdate': '申请时间',
+    'ordercode': '订单编号',
+    'srvtypename': '服务类型',
+    'packagename': '服务名称',
+    'money': '订单金额（元）',
+    'paystate': '支付状态',
+    'srvstarttime': '服务开始时间',
+    'srvendtime': '服务结束时间',
+    'srvstatename': '订单状态',
+    'isinvoiced': '是否开票',
+    'postaddr': '发票邮寄地址'
+  },
+  'appinfobills': {
+    'apptypename': '业务类型',
+    'appdate': '申请日期',
+    'checkdate': '审批日期',
+    'checkstatename': '审批状态',
+    'checknote': '审批意见'
+  }
+  /*
   'quafiles': ['资质类型', '文件ID', '文件名称'],
   'vmsorts': ['标的类型', '主营类别'],
   'srvorders': ['申请人', '申请时间', '订单编号', '服务类型', '服务名称', '订单金额（元）', '支付状态', '服务开始时间', '服务结束时间', '订单状态', '是否开票', '发票邮寄地址'],
   'appinfobills': ['业务类型', '申请日期', '审批日期', '审批状态', '审批意见']
+  */
 }
 

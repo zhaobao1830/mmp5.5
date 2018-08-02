@@ -11,7 +11,7 @@
       <div class="samCon_search" ref="samCon_search">
         <div>
           <p>申请时间：</p>
-          <el-date-picker type="date" placeholder="选择日期" style="width: 100px" class="sq_time_f" ref="sq_time_f" v-model="sq_fromt"></el-date-picker>
+          <el-date-picker type="date" placeholder="选择日期" style="width: 100px" class="sq_time_f" ref="sq_time_f" v-model="sq_fromt" ></el-date-picker>
           <i></i>
           <el-date-picker type="date" placeholder="选择日期" style="width: 100px" class="sq_time_f" v-model="sq_endt"></el-date-picker>
         </div>
@@ -349,6 +349,8 @@
           .then(function (response) {
             if (response.data.result === 'TRUE') {
               _this.tc_chioce_list = response.data.detail
+            } else {
+              _this.tc_chioce_list = []
             }
           })
           .catch(function (err) {
@@ -401,13 +403,57 @@
           let id = this.trClick_list.join(',')
           let approvalstatus = str
           let _this = this
+          if (id) {
+            axios({
+              url: this.$store.state.baseUrl + this.$store.state.mmpUrl + 'index.php?s=Service/Interface',
+              method: 'POST',
+              data: {
+                'interface': 'approval',
+                'subid': id,
+                'approvalstatus': approvalstatus
+              },
+              transformRequest: [function (data) {
+                let ret = ''
+                for (let it in data) {
+                  ret += encodeURIComponent(it) + '=' + encodeURIComponent(data[it]) + '&'
+                }
+                return ret
+              }],
+              headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+              }
+            })
+              .then(function (response) {
+                let detailVal = ''
+                for (let i = 0; i < response.data.length; i++) {
+                  detailVal = response.data[i].result
+                  if (detailVal === 'FALSE') {
+                    _this.tbody_list[response.data[i].id].approvalstatus = (str === '审批通过' ? '审批通过' : '驳回')
+                  }
+                }
+                str === '审批通过' ? _this.$message('审批通过') : _this.$message('驳回通过')
+                _this.trClick_list = []
+              })
+              .catch(function (err) {
+                console.log(err)
+              })
+          } else {
+            _this.$message('请至少选择一条数据！')
+          }
+        }
+      },
+      // 设置金额
+      setCash () {
+        let id = this.trClick_list.join(',')
+        let _this = this
+        if (id) {
           axios({
             url: this.$store.state.baseUrl + this.$store.state.mmpUrl + 'index.php?s=Service/Interface',
-            method: 'POST',
+            method: 'post',
             data: {
-              'interface': 'approval',
+              'interface': 'setxianxia',
               'subid': id,
-              'approvalstatus': approvalstatus
+              'setxianxia': this.cashVal
             },
             transformRequest: [function (data) {
               let ret = ''
@@ -420,56 +466,20 @@
               'Content-Type': 'application/x-www-form-urlencoded'
             }
           })
-            .then(function (response) {
-              let detailVal = ''
-              for (let i = 0; i < response.data.length; i++) {
-                detailVal = response.data[i].result
-                if (detailVal === 'FALSE') {
-                  _this.tbody_list[response.data[i].id].approvalstatus = (str === '审批通过' ? '审批通过' : '驳回')
-                }
+            .then(function () {
+              for (let i = 0; i < _this.trClick_list.length; i++) {
+                _this.tbody_list[_this.trClick_list[i]].actualpayments = _this.cashVal
               }
-              str === '审批通过' ? _this.$message('审批通过') : _this.$message('驳回通过')
+              _this.$message('设置金额成功！')
+              _this.cashVal = ''
               _this.trClick_list = []
             })
             .catch(function (err) {
               console.log(err)
             })
+        } else {
+          _this.$message('请至少选择一条数据！')
         }
-      },
-      // 设置金额
-      setCash () {
-        let id = this.trClick_list.join(',')
-        let _this = this
-        axios({
-          url: this.$store.state.baseUrl + this.$store.state.mmpUrl + 'index.php?s=Service/Interface',
-          method: 'post',
-          data: {
-            'interface': 'setxianxia',
-            'subid': id,
-            'setxianxia': this.cashVal
-          },
-          transformRequest: [function (data) {
-            let ret = ''
-            for (let it in data) {
-              ret += encodeURIComponent(it) + '=' + encodeURIComponent(data[it]) + '&'
-            }
-            return ret
-          }],
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded'
-          }
-        })
-          .then(function () {
-            for (let i = 0; i < _this.trClick_list.length; i++) {
-              _this.tbody_list[_this.trClick_list[i]].actualpayments = _this.cashVal
-            }
-            _this.$message('设置金额成功！')
-            _this.cashVal = ''
-            _this.trClick_list = []
-          })
-          .catch(function (err) {
-            console.log(err)
-          })
       }
     }
   }

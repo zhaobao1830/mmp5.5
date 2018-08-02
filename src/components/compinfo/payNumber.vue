@@ -20,39 +20,45 @@
           </li>
         </ul>
       </form>
-      <table class="payList">
-          <thead>
-              <tr>
-                  <th>
-                      主营类别编号
-                  </th>
-                  <th>
-                      主营类别名称
-                  </th>
-                  <th>
-                      标的类型
-                  </th>
-                  <th>
-                      收费档次
-                  </th>
-                  <th>
-                      收费金额
-                  </th>
-              </tr>
-          </thead>
-          <tbody>
-            <tr v-for='(value, key) in tabellist'>
-              <td>{{value.vmsortcode || ''}}</td>
-              <td>{{value.vmsortname || ''}}</td>
-              <td>{{value.subtypename || ''}}</td>
-              <td>{{value.costname || ''}}</td>
-              <td>{{value.money || ''}}</td>
-            </tr>
-          </tbody>
-      </table>
-      <!-- 分页 TOP -->
-      <!--<pagelst :total="total" :page-size='rows' :current='page' size="small" v-show='pageShow' @on-change='pagechange' show-elevator show-sizer></pagelst>-->
-      <!-- 分页 BTM -->
+      <el-table class="payList"
+      v-loading="loading"
+      element-loading-text="拼命加载中"
+      element-loading-spinner="el-icon-loading"
+      element-loading-background="rgba(0, 0, 0, 0.8)"
+      :data="tabellist"
+      style="width: 100%">
+        <el-table-column
+          prop="vmsortcode"
+          label="主营类别编号">
+        </el-table-column>
+        <el-table-column
+          prop="vmsortname"
+          label="主营类别名称">
+        </el-table-column>
+        <el-table-column
+          prop="subtypename"
+          label="标的类型">
+        </el-table-column>
+        <el-table-column
+          prop="costname"
+          label="收费档次">
+        </el-table-column>
+        <el-table-column
+          prop="money"
+          label="收费金额">
+        </el-table-column>
+      </el-table>
+      <div class="searchblock">
+        <el-pagination
+          @size-change="sizeChange"
+          @current-change="search"
+          :current-page.sync="page"
+          :page-size="rows"
+          layout="total, sizes, prev, pager, next, jumper"
+          :total="total"
+          v-show='total > 0'>
+        </el-pagination>
+      </div>
     </div>
   </div>
 </template>
@@ -60,7 +66,6 @@
 <script>
 import axios from 'axios'
 require('es6-promise').polyfill()
-// import {compInfo1} from '@/static/js/getAppInfo'
 
 //import pagelst from 'iview/src/components/page'
 //import iView from 'iview'
@@ -84,15 +89,21 @@ export default {
       pageShow: false,
       payMoney: '',
       category: '',
-      tabellist: []
+      tabellist: [],
+      loading: false
     }
   },
   methods: {
     search () {
+      this.loading = true;
       counteList(this)
     },
     'pagechange': function(pageNum){
       this.page = pageNum
+    },
+    'sizeChange': function(val){
+      this.rows = val;
+      this.search();
     }
   },
   watch: {
@@ -132,6 +143,7 @@ function counteList (obj) {
     }
   })
   .then(function (response) {
+    obj.loading = false;
     if (response.data !== 'null') {
       obj.pageShow = true
       var listJ = response.data
@@ -218,6 +230,17 @@ function counteList (obj) {
 }
 #gray .pager div.short input{
   width:32px;
+}
+.el-pagination.is-background .btn-next, .el-pagination.is-background .btn-prev, .el-pagination.is-background .el-pager li {
+    margin: 0 5px;
+    background-color: #f4f4f5;
+    color: #606266;
+    min-width: 30px;
+    border-radius: 2px;
+}
+.searchblock .el-pagination{
+  padding: 10px 0;
+  text-align: center;
 }
 [v-cloak]{
   display:none;
